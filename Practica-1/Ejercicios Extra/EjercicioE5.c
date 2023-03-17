@@ -14,10 +14,11 @@ int main(){
   else while (1){
     if (((dados[0]+dados[1])==2)||((dados[0]+dados[1])==12)){
       printf("Perdiste con %d", dados[0] + dados[1]);
+      break;
+    } else if ((dados[0]+dados[1])==primerDados){
+      printf("Ganaste tras conseguir %d por segunda vez", primerDados);
+      break;
     }
-  }
-  while (1) {
-    
   }
   return 0;
 }
