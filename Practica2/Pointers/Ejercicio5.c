@@ -27,4 +27,3 @@ void Swap(int *p, int length){
     p++;
     p2--;
   }
-}

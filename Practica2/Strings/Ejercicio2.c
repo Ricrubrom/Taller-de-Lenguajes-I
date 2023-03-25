@@ -1,6 +1,7 @@
 #include <stdio.h>
+#include <string.h>
 int main(){
-    char palabra[20];
+  char palabra[20];
   int cant = 0;
   do
   {
