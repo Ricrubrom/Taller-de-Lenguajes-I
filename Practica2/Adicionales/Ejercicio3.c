@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <string.h>
+
 
 void upperString(char cadena[]);
 void lowerString(char cadena[]);
@@ -53,19 +55,15 @@ char *numToString(int num, char cadena[]){
 char *numToText(int num, char cadena[]){
   char *unidades[] = {"cero", "uno", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve"};
   char *decenas[] = {"diez", "veinte", "treinta", "cuarenta", "cincuenta", "sesenta", "setenta", "ochenta", "noventa"};
-  char *especiales1[] = {"once", "doce", "trece", "catorce", "quince", "dieciseis", "diecisiete", "dieciocho", "diecinueve"};
-  char *especiales2[] = {"veintiuno", "veintidos", "veintitres", "veinticuatro", "veinticinco", "veintiseis", "veintisiete", "veintiocho", "veintinueve"};
+  char *especiales[] = {"once", "doce", "trece", "catorce", "quince", "dieciseis", "diecisiete", "dieciocho", "diecinueve","veintiuno", "veintidos", "veintitres", "veinticuatro", "veinticinco", "veintiseis", "veintisiete", "veintiocho", "veintinueve"};
   int i = 0;
   if (num < 10)
   {
     strcpy(cadena, unidades[num]);
   }
-  else if (num < 20)
+  else if (num < 30)
   {
-    strcpy(cadena, especiales1[num - 11]);
-  }
-  else if (num<30){
-    strcpy(cadena, especiales2[num - 21]);
+    strcpy(cadena, especiales[num - 11]);
   }
   else
   {
