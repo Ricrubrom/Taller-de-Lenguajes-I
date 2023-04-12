@@ -1,28 +1,38 @@
 #include <stdio.h>
-typedef struct{
-  unsigned segundo:5;
-  unsigned minuto:6;
-  unsigned hora:5;
-} horario;
+struct horario {
+    unsigned hora : 5;
+    unsigned minutos : 6;
+    unsigned segundos : 5;
+};
+int main() {
+    struct horario h;
+    int value;
 
-int main(){
-  horario h;
-  printf("Introduce la hora: ");
-  unsigned int hora;
-  scanf("%d", &hora);
-  printf("Introduce los minutos: ");
-  unsigned int minuto;
-  scanf("%d", &minuto);
-  printf("Introduce los segundos: ");
-  unsigned int segundo;
-  scanf("%d", &segundo);
-  if (segundo>=32){
-    segundo=0;
-    minuto++;
-  }
-  h.hora = hora;
-  h.minuto = minuto;
-  h.segundo = segundo;
-  printf("%02d:%02d:%02d\n", h.hora, h.minuto, h.segundo);
-  return 0;
+    printf("Ingrese una hora: ");
+    scanf("%d", &value);
+    h.hora = value;
+
+    printf("Ingrese minutos: ");
+    scanf("%d", &value);
+    h.minutos = value;
+
+    printf("Ingrese segundos: ");
+    scanf("%d", &value);
+    if (value > 31) {
+        if (h.minutos == 59) {
+            h.minutos = 0;
+            if (h.hora == 23)
+                h.hora = 0;
+            else 
+                h.hora++;
+        }
+        else {
+            h.minutos++;
+        }
+    }
+    else 
+        h.segundos = value;
+
+    printf("Horario = %d:%d:%d", h.hora,h.minutos,h.segundos);
+    return 0;
 }
