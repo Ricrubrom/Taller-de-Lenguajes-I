@@ -19,7 +19,7 @@ void addSorted(List *l, int n);
 
 int main()
 {
-  List l = initList();
+  List l = initList(10);
   addSorted(&l, 1);
   addSorted(&l, 2);
   addSorted(&l, 3);
@@ -37,10 +37,11 @@ int main()
   return 0;
 }
 
-
-List initList(){
+List initList(int n)
+{
   List aux = (List)malloc(sizeof(Node));
   aux->next = NULL;
+  aux->num = n;
   return aux;
 }
 
@@ -91,6 +92,7 @@ int getSize(List l){
 void toString(List l){
   if (l!=NULL){
     printf("%d", l->num);
+    l = l->next;
     while (l!=NULL){
       printf(", %d", l->num);
       l = l->next;
@@ -105,17 +107,21 @@ void addSorted(List *l, int n){
   aux->num = n;
   List act = *l;
   List ant = act;
-  while (act!=NULL && act->num<n)
-  {
-    ant = act;
-    act = act->next;
+  if(act!=NULL){
+    while (act!=NULL && act->num<n)
+    {
+      ant = act;
+      act = act->next;
+    }
+    if (ant==act){
+      *l = aux;
+    }
+    else{
+      ant->next = aux;
+    }
+    aux->next = act;
+    return;
   }
-  if (ant==act){
-    *l = aux;
-  }
-  else{
-    ant->next = aux;
-  }
-  aux->next = act;
+  *l = aux;
   return;
 }
