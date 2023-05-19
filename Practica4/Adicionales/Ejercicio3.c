@@ -5,10 +5,10 @@
 typedef enum {FALSE, TRUE} Boolean;
 #define SIZE 8
 #define HIDDEN '-'
-#define NOT_HIDDEN ' '
+#define SAFE ' '
 #define FLAG '?'
 #define BOMB '*'
-#define BOMBS 10
+#define BOMBS 5
 #define CELL_SIZE 3
 
 typedef struct{
@@ -21,29 +21,26 @@ typedef struct{
 Cell **startGame();
 void printGame(Cell **game);
 void gameLoop(Cell **game);
-int processPlay(Cell ***game);
+int processPlay(Cell **game, int x, int y, int *totPlays);
 
 
 int main(){
-  srand(1);
+  srand(time(0));
   Cell **game = startGame();
-  printGame(game);
+  gameLoop(game);
+  for (int i = 0; i < SIZE; i++)
+  {
+    free(game[i]);
+  }
+  free(game);
   return 0;
 }
 
 Cell **startGame(){
-  Cell **game = (Cell **)malloc(SIZE * sizeof(Cell*));
+  Cell **game = (Cell **)calloc(SIZE, sizeof(Cell*));
   for (int i = 0; i < SIZE; i++)
   {
-    game[i] = (Cell *)malloc(SIZE * sizeof(Cell));
-  }
-  for (int j = 0; j < SIZE; j++)
-  {
-    for (int k = 0; k < SIZE; k++)
-    {
-      game[j][k].bombs=0;
-      game[j][k].isBomb=FALSE;
-    }
+    game[i] = (Cell *)calloc(SIZE, sizeof(Cell));
   }
   for (int i = 0; i < BOMBS; i++)
   {
@@ -72,7 +69,7 @@ Cell **startGame(){
   {
     for (int j = 0; j < SIZE; j++)
     {
-      game[i][j].state = TRUE;
+      game[i][j].state = FALSE;
       game[i][j].sign = game[i][j].bombs+'0';
     }
   }
@@ -99,16 +96,16 @@ void printGame(Cell **T) {
 
       // imprimir cada casilla de la fila
       for (int j = 0; j < SIZE; j++) {
-        if (T[i][j].isBomb)
+        if(T[i][j].state == TRUE && T[i][j].isBomb!=TRUE)
+          printf("| %c ", T[i][j].sign);
+        else
         {
-          printf("| %c ", BOMB);
-        }
-        else{
-          if(T[i][j].state == TRUE)
-            printf("| %c ", T[i][j].sign);
-          else
+          if (T[i][j].state==FALSE)
           {
             printf("| %c ", HIDDEN);
+          }
+          else{
+            printf("| %c ", BOMB);
           }
         }
       }
@@ -124,17 +121,81 @@ void printGame(Cell **T) {
   }
 
 void gameLoop(Cell **game){
-    int totPlays = SIZE * SIZE * BOMBS;
+    int totPlays = SIZE * SIZE - BOMBS;
     char play[5];
+    int flag;
     while (TRUE)
     {
       printGame(game);
-      printf("Inserte Jugada (? marca)(0-%d)(A-%c)", SIZE, SIZE + 'A');
+      printf("\nInserte Jugada (? marca)(0-%d)(A-%c): ", SIZE - 1, SIZE - 1 + 'A');
       scanf("%s", play);
-      while (getchar() || !(((play[0]==FLAG && (play[1]>='0' && play[1]<=7)&&(play[2]>='A' && play[2]<='H')))||((play[0]>='0' && play[0]<=7)&&(play[1]>='A' && play[1]<='H')))){
-        while(getchar());
-        printf("Jugada Erronea, intente devuelta: ");
+      while (!((play[0]==FLAG && (play[1]>='0' && play[1]<=SIZE - 1 + '0')&&(play[2]>='A' && play[2]<=SIZE - 1 + 'A'))||((play[0]>='0' && play[0]<=SIZE - 1 + '0')&&(play[1]>='A' && play[1]<='H')))){
+        printf("\nJugada Erronea, intente devuelta: ");
         scanf("%s", play);
       }
+      if (play[0]==FLAG){
+        if (game[play[1] - 0x30][play[2] - 0x41].state!=0 && game[play[1] - 0x30][play[2] - 0x41].sign != FLAG )
+        {
+          printf("\nNo puedes marcar una casilla ya descubierta\n");
+          continue;
+        }
+        game[play[1] - 0x30][play[2] - 0x41].state = game[play[1] - 0x30][play[2] - 0x41].state ^ 1 ;
+        if (game[play[1] - 0x30][play[2] - 0x41].state){
+          game[play[1] - 0x30][play[2] - 0x41].sign = FLAG ;
+        }
+        else{
+          game[play[1] - 0x30][play[2] - 0x41].sign = HIDDEN ;
+        }
+      }
+      else
+      {
+        flag = processPlay(game, play[0] - 0x30, play[1] - 0x41, &totPlays);
+        if (flag){
+          break;
+        }
+      }
+      if (totPlays==0)
+        break;
     }
+    if (flag){
+      printGame(game);
+      printf("PERDISTEEEEEEEE!!!!!!!!");
+    }
+    else{
+      printGame(game);
+      printf("GANASTEEEEEEEEE!!!!!!!!");
+    }
+}
+
+int processPlay(Cell **game, int x, int y, int *totPlays){
+  if (game[x][y].isBomb){
+    game[x][y].sign = BOMB;
+    game[x][y].state = TRUE;
+    return TRUE;
+  }
+  if (game[x][y].state){
+    return FALSE;
+  }
+  (*totPlays)--;
+  if (game[x][y].bombs==0){
+    game[x][y].sign = SAFE;
+    game[x][y].state = TRUE;
+    for (int i = x-1; i <= x+1; i++)
+    {
+      for (int j = y-1; j <= y+1; j++)
+      {
+          if ((i >= 0 && i <= SIZE - 1) && (j >= 0 && j <= SIZE - 1)){
+            int flag=processPlay(game, i, j, totPlays);
+            if (flag==TRUE){
+              return TRUE;
+            }
+          }
+      }
+    }
+  }
+  else{
+    game[x][y].sign = game[x][y].bombs + '0';
+    game[x][y].state = TRUE;
+  }
+  return FALSE;
 }
