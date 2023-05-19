@@ -4,7 +4,7 @@
 
 typedef enum {FALSE, TRUE} Boolean;
 #define SIZE 8
-#define HIDDEN '-'
+#define HIDDEN 0xB1
 #define SAFE ' '
 #define FLAG '?'
 #define BOMB '*'
@@ -105,7 +105,7 @@ void printGame(Cell **T) {
             printf("| %c ", HIDDEN);
           }
           else{
-            printf("| %c ", BOMB);
+            printf("| %c ", T[i][j].sign);
           }
         }
       }
